@@ -8,12 +8,17 @@ namespace assemblydumper
 	public class Dumper
 	{
 
-		public void Introspect(string inputPath, string outputPath)
+		public void Introspect(string inputPath, string outputDirectory)
 		{
 			AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += new ResolveEventHandler(CurrentDomain_ReflectionOnlyAssemblyResolve);
 			Assembly assembly = Assembly.ReflectionOnlyLoadFrom(inputPath);
 			ICollection<string> lines = new LinkedList<string>();
 			Dump(lines, assembly, 0);
+			Directory.CreateDirectory(outputDirectory);
+
+			string outputSourceDirectory = Path.Combine(outputDirectory, "src");
+			Directory.CreateDirectory(outputSourceDirectory);
+			string outputPath = Path.Combine(outputSourceDirectory, Path.GetFileNameWithoutExtension(inputPath) + ".cs");
 			SaveFile(lines, outputPath);
 		}
 
