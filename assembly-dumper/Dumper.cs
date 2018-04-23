@@ -8,7 +8,7 @@ namespace assemblydumper
 	public class Dumper
 	{
 
-		public static void Introspect(string inputPath, string outputPath)
+		public void Introspect(string inputPath, string outputPath)
 		{
 			AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += new ResolveEventHandler(CurrentDomain_ReflectionOnlyAssemblyResolve);
 			Assembly assembly = Assembly.ReflectionOnlyLoadFrom(inputPath);
@@ -17,7 +17,7 @@ namespace assemblydumper
 			SaveFile(lines, outputPath);
 		}
 
-		static Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
+		private Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
 		{
 			string baseDirectory = Path.GetDirectoryName(args.RequestingAssembly.Location);
 			string assemblyPath = Path.Combine(baseDirectory, new AssemblyName(args.Name).Name + ".dll");
@@ -28,7 +28,7 @@ namespace assemblydumper
 			return Assembly.ReflectionOnlyLoad(args.Name);
 		}
 
-		private static void Dump(ICollection<string> lines, Assembly assembly, int indent)
+		private void Dump(ICollection<string> lines, Assembly assembly, int indent)
 		{
 			Append(lines, String.Format("// {0}", assembly.FullName), indent);
 			Type[] types = assembly.GetTypes();
@@ -65,7 +65,7 @@ namespace assemblydumper
 			}
 		}
 
-		private static void Dump(ICollection<string> lines, System.Type type, int indent)
+		private void Dump(ICollection<string> lines, System.Type type, int indent)
 		{
 			if (!type.IsVisible)
 			{
@@ -212,7 +212,7 @@ namespace assemblydumper
 			}
 		}
 
-		private static void Dump(ICollection<string> lines, PropertyInfo propertyInfo, int indent)
+		private void Dump(ICollection<string> lines, PropertyInfo propertyInfo, int indent)
 		{
 			ICollection<string> accessors = new LinkedList<string>();
 			if (propertyInfo.CanRead)
@@ -226,7 +226,7 @@ namespace assemblydumper
 			Append(lines, String.Format("public {0} {1} {{ {2} }}", GetClassName(propertyInfo.DeclaringType.Namespace, propertyInfo.PropertyType), propertyInfo.Name, Join(accessors, " ")), indent);
 		}
 
-		private static void Dump(ICollection<string> lines, MethodInfo methodInfo, int indent)
+		private void Dump(ICollection<string> lines, MethodInfo methodInfo, int indent)
 		{
 			ICollection<string> parameters = new LinkedList<string>();
 			foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
@@ -236,7 +236,7 @@ namespace assemblydumper
 			Append(lines, String.Format("public {0} {1}({2}) {{ }}", GetClassName(methodInfo.DeclaringType.Namespace, methodInfo.ReturnType), methodInfo.Name, Join(parameters, ", ")), indent);
 		}
 
-		private static string GetClassName(string currentNamespace, System.Type type)
+		private string GetClassName(string currentNamespace, System.Type type)
 		{
 			string className = ResolveClassName(currentNamespace, type);
 			ICollection<string> args = new LinkedList<string>();
@@ -270,7 +270,7 @@ namespace assemblydumper
 			return className;
 		}
 
-		private static string ResolveClassName(string currentNamespace, System.Type type)
+		private string ResolveClassName(string currentNamespace, System.Type type)
 		{
 			string typeName;
 			if (type.IsPrimitive)
@@ -331,7 +331,7 @@ namespace assemblydumper
 			return typeName;
 		}
 
-		private static string GetExtends(System.Type type)
+		private string GetExtends(System.Type type)
 		{
 			ICollection<string> extends = new LinkedList<string>();
 			if ((type.BaseType != null) && (type.BaseType.FullName != "System.Object"))
@@ -353,7 +353,7 @@ namespace assemblydumper
 			}
 		}
 
-		private static string GetIndent(int indent)
+		private string GetIndent(int indent)
 		{
 			string s = "";
 			for (int i = 0; i < indent; i++)
@@ -363,12 +363,12 @@ namespace assemblydumper
 			return s;
 		}
 
-		private static void Append(ICollection<string> lines, string line, int indent)
+		private void Append(ICollection<string> lines, string line, int indent)
 		{
 			lines.Add(GetIndent(indent) + line + "\n");
 		}
 
-		private static string Join(ICollection<string> strings, string delimiter)
+		private string Join(ICollection<string> strings, string delimiter)
 		{
 			string sb = "";
 			bool first = true;
@@ -387,7 +387,7 @@ namespace assemblydumper
 			return sb;
 		}
 
-		private static void SaveFile(ICollection<string> lines, string targetPath)
+		private void SaveFile(ICollection<string> lines, string targetPath)
 		{
 			StreamWriter writer = new StreamWriter(targetPath, false, new System.Text.UTF8Encoding(true), 8192);
 			foreach (string line in lines)
