@@ -10,7 +10,9 @@ namespace assemblydumper
 			string assemblyPath = args[0];
 			string outputDirectory = args[1];
 
-			Directory.Delete(outputDirectory, true);
+			if (Directory.Exists(outputDirectory)) {
+				Directory.Delete(outputDirectory, true);
+			}
 
 			Dumper dumper = new Dumper();
 			dumper.Introspect(assemblyPath, outputDirectory);
