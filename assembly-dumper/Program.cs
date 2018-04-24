@@ -49,12 +49,12 @@ namespace assemblydumper
 				}
 
 				System.Diagnostics.Process process = new System.Diagnostics.Process();
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                startInfo.FileName = "doxygen";
-                startInfo.Arguments = doxyfilePath;
-                process.StartInfo = startInfo;
-                process.Start();
+				System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+				startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+				startInfo.FileName = "doxygen";
+				startInfo.Arguments = doxyfilePath;
+				process.StartInfo = startInfo;
+				process.Start();
 			}
 		}
 	}
